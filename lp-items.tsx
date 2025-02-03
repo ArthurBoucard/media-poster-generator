@@ -1,8 +1,10 @@
+import { link } from 'fs';
 import Image from 'next/image';
 
 export const LP_GRID_ITEMS = [
   {
     title: "Spotify",
+    link: "spotify",
     icon: (
       <Image 
         src="/assets/spotify.png" 
@@ -15,6 +17,7 @@ export const LP_GRID_ITEMS = [
   },
   {
     title: "Letterboxd",
+    link: "letterboxd",
     icon: (
       <Image 
         src="/assets/letterboxd.png" 
@@ -27,6 +30,7 @@ export const LP_GRID_ITEMS = [
   },
   {
     title: "Goodreads",
+    link: "goodreads",
     icon: (
       <Image 
         src="/assets/goodreads.png" 
