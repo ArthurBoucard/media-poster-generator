@@ -2,7 +2,7 @@
 
 import { LP_GRID_ITEMS } from "lp-items"
 
-export default function Goodreads() {
+export default function GoodreadsShowcase() {
   const item = LP_GRID_ITEMS.find(item => item.title === "Goodreads") || { title: "Error", link: "error", icon: <div /> };
 
   return (
@@ -14,6 +14,13 @@ export default function Goodreads() {
               <div className="mb-4 flex size-40 items-center justify-center">
                 {item.icon}
               </div>
+              <button className="mb-2 text-xl font-bold text-white bg-emerald-800 rounded-lg p-4 transition duration-300 hover:bg-emerald-700 hover:shadow-lg hover:scale-105"
+                onClick={() => {
+                  window.location.href = "/api/" + item.link + "/login";
+                }}
+              >
+                Connect
+              </button>
             </div>
           </div>
         </div>

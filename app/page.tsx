@@ -17,7 +17,7 @@ export default function Web() {
         <div className="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-16 lg:px-6">
           <div className="justify-center space-y-8 md:grid md:grid-cols-2 md:gap-12 md:space-y-0 lg:grid-cols-3">
             {LP_GRID_ITEMS.map((singleItem) => (
-              <Link href={`/app/${singleItem.link}`}>
+              <Link href={`/app/${singleItem.link}/showcase`}>
                 <div key={singleItem.title} className="flex flex-col items-center justify-center text-center rounded-lg transition duration-300 hover:bg-emerald-800 hover:shadow-lg hover:scale-105 p-4">
                   <div className="mb-4 flex size-30 items-center justify-center">
                     {singleItem.icon}

@@ -1,7 +1,23 @@
+'use client'
+
+import { LP_GRID_ITEMS } from "lp-items"
+
 export default function Spotify() {
+  const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
+
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold">Welcome to the New Page</h1>
+    <div className="bg-emerald-950 min-h-screen">
+      <section>
+        <div className="mx-auto grid max-w-(--breakpoint-xl) px-4 py-8 text-center lg:py-16">
+          <div className="mx-auto place-self-center">
+            <div key={item.title} className="flex flex-col items-center justify-center text-center">
+              <div className="mb-4 flex size-40 items-center justify-center">
+                {item.icon}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
