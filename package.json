@@ -47,6 +47,7 @@
     "@t3-oss/env-nextjs": "^0.10.1",
     "@vercel/otel": "^1.8.3",
     "class-variance-authority": "^0.7.0",
+    "cookies-next": "^5.1.0",
     "lodash": "^4.17.21",
     "next": "15.1.6",
     "next-auth": "^4.24.11",

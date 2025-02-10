@@ -1,9 +1,30 @@
 'use client'
 
+import Image from 'next/image';
+import { useEffect, useState } from "react";
 import { LP_GRID_ITEMS } from "lp-items"
 
 export default function Spotify() {
   const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
+  const [topAlbums, setTopAlbums] = useState([]);
+
+  useEffect(() => {
+    async function fetchTopAlbums() {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const response = await fetch(`${baseUrl}/api/spotify/top-albums`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch top albums");
+        }
+        const data = await response.json();
+        setTopAlbums(data);
+      } catch (error) {
+        console.error("Error fetching top albums:", error);
+      }
+    }
+
+    fetchTopAlbums();
+  }, []);
 
   return (
     <div className="bg-emerald-950 min-h-screen">
@@ -16,6 +37,23 @@ export default function Spotify() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="mt-8">
+          <h2 className="text-white text-lg">Top Albums</h2> {/* TODO: Temporary*/}
+          <ul className="text-white">
+            {topAlbums.map((album: any, index: number) => (
+              <li key={index}>
+                {album.name}
+                <Image 
+                  src={album.imageUrl} 
+                  alt={album.name} 
+                  width={100} 
+                  height={100} 
+                  layout="intrinsic" // Optional, controls image layout
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </div>
