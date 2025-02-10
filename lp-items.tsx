@@ -1,4 +1,3 @@
-import { link } from 'fs';
 import Image from 'next/image';
 
 export const LP_GRID_ITEMS = [
