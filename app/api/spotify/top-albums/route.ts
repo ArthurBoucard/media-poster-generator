@@ -4,13 +4,29 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
   const accessToken = await getCookie('spotify_access_token', { req });
 
+  interface TracksData {
+    items: {
+      album: {
+        id: string;
+        name: string;
+        images: { url: string }[];
+      };
+    }[];
+  }
+  interface AlbumData {
+    name: string;
+    imageUrl: string;
+    totalTracks: number;
+    totalWeight: number;
+  }
+
   if (!accessToken) {
     return NextResponse.json({ error: "Access token not found" }, { status: 401 });
   }
 
   const totalTracks = parseInt(req.nextUrl.searchParams.get('totalTracks') || '50', 10);
   const timerange = req.nextUrl.searchParams.get('timerange') || 'short_term';
-  let TotalTracksData = [];
+  let TotalTracksData = [] as TracksData['items'];
   let offset = 0;
   let fetchedTracksCount = 50;
   
@@ -27,7 +43,7 @@ export async function GET(req: NextRequest) {
         throw new Error(`Spotify API error: ${response.statusText}`);
       }
   
-      const data = await response.json();
+      const data = await response.json() as TracksData;
       fetchedTracksCount = data.items.length;
       TotalTracksData = TotalTracksData.concat(data.items);
       offset += 50;
@@ -47,7 +63,7 @@ export async function GET(req: NextRequest) {
     if (!acc[albumId]) {
       acc[albumId] = {
         name: track.album.name,
-        imageUrl: track.album.images[0].url,
+        imageUrl: track.album?.images?.[0]?.url || '',
         totalTracks: 0,
         totalWeight: 0
       };
@@ -59,15 +75,19 @@ export async function GET(req: NextRequest) {
     acc[albumId].totalWeight += trackWeight;
 
     return acc;
-  }, {});
+  }, {} as Record<string, AlbumData>);
 
-  const processedAlbumData = Object.keys(albumData).map(albumId => ({
-    albumId,
-    name: albumData[albumId].name,
-    imageUrl: albumData[albumId].imageUrl,
-    totalTracks: albumData[albumId].totalTracks,
-    totalWeight: albumData[albumId].totalWeight,
-  }));
+  const processedAlbumData = Object.keys(albumData).map(albumId => {
+    const album = albumData[albumId] as AlbumData;
+  
+    return {
+      albumId,
+      name: album.name,
+      imageUrl: album.imageUrl,
+      totalTracks: album.totalTracks,
+      totalWeight: album.totalWeight,
+    };
+  });
 
   const scoredAlbumData = processedAlbumData.map(album => {
     const score = (album.totalWeight / album.totalTracks);

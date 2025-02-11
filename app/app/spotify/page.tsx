@@ -6,7 +6,15 @@ import { LP_GRID_ITEMS } from "lp-items"
 
 export default function Spotify() {
   const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
-  const [topAlbums, setTopAlbums] = useState([]);
+  const [topAlbums, setTopAlbums] = useState(Array<Album>());
+
+  interface Album {
+    name: string;
+    imageUrl: string;
+    totalTracks: number;
+    totalWeight: number;
+    score: number;
+  }
 
   useEffect(() => {
     async function fetchTopAlbums() {
@@ -16,7 +24,7 @@ export default function Spotify() {
         if (!response.ok) {
           throw new Error("Failed to fetch top albums");
         }
-        const data = await response.json();
+        const data = await response.json() as Album[];
         setTopAlbums(data);
       } catch (error) {
         console.error("Error fetching top albums:", error);
@@ -41,7 +49,7 @@ export default function Spotify() {
         <div className="mt-8">
           <h2 className="text-white text-lg">Top Albums</h2> {/* TODO: Temporary*/}
           <ul className="text-white">
-            {topAlbums.map((album: any, index: number) => (
+            {topAlbums.map((album: Album, index: number) => (
               <li key={index}>
                 {album.name}
                 <Image 
