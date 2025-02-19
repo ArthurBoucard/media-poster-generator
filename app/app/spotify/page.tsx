@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from "react";
+import Carousel from "components/Carousel";
 import { LP_GRID_ITEMS } from "lp-items"
 
   interface Album {
@@ -63,8 +64,12 @@ export default function Spotify() {
             </div>
           </div>
         </div>
-        <div>
-          {/* Carrousel of poster exemples */}
+        <div className="w-4/5 mx-auto">
+          <Carousel images={[
+            "/assets/spotify/carousel/1.png",
+            "/assets/spotify/carousel/2.png",
+            "/assets/spotify/carousel/3.png",
+          ]} />
         </div>
         {/* <div className="mt-8">
           <h2 className="text-white text-lg">Top Albums</h2> {}

@@ -6,7 +6,7 @@ export const LP_GRID_ITEMS = [
     link: "spotify",
     icon: (
       <Image 
-        src="/assets/spotify.png" 
+        src="/assets/spotify/logo.png" 
         alt="Logo" 
         className="object-contain"
         width={1000}
@@ -19,7 +19,7 @@ export const LP_GRID_ITEMS = [
     link: "letterboxd",
     icon: (
       <Image 
-        src="/assets/letterboxd.png" 
+        src="/assets/letterboxd/logo.png" 
         alt="Logo" 
         className="object-contain"
         width={1000}
@@ -32,7 +32,7 @@ export const LP_GRID_ITEMS = [
     link: "goodreads",
     icon: (
       <Image 
-        src="/assets/goodreads.png" 
+        src="/assets/goodreads/logo.png" 
         alt="Logo" 
         className="object-contain"
         width={1000}
