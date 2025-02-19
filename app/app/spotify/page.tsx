@@ -4,10 +4,6 @@ import Image from 'next/image';
 import { useEffect, useState } from "react";
 import { LP_GRID_ITEMS } from "lp-items"
 
-export default function Spotify() {
-  const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
-  const [topAlbums, setTopAlbums] = useState(Array<Album>());
-
   interface Album {
     name: string;
     imageUrl: string;
@@ -15,6 +11,27 @@ export default function Spotify() {
     totalWeight: number;
     score: number;
   }
+
+export default function Spotify() {
+  const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
+  const [topAlbums, setTopAlbums] = useState(Array<Album>());
+  const [collageUrl, setCollageUrl] = useState<string | null>(null);
+
+  const generateCollage = async () => {
+    const response = await fetch("/api/spotify/collage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(topAlbums), // TODO: add nb of column or row, and ratio size (1:1, 4:3, 16:9)
+    });
+
+    if (!response.ok) {
+      console.error("Failed to generate collage");
+      return;
+    }
+
+    const blob = await response.blob();
+    setCollageUrl(URL.createObjectURL(blob));
+  };
 
   useEffect(() => {
     async function fetchTopAlbums() {
@@ -49,27 +66,40 @@ export default function Spotify() {
         <div>
           {/* Carrousel of poster exemples */}
         </div>
-        <div className="mt-8">
-          <h2 className="text-white text-lg">Top Albums</h2> {/* TODO: Temporary*/}
+        {/* <div className="mt-8">
+          <h2 className="text-white text-lg">Top Albums</h2> {}
           <ul className="text-white">
             {topAlbums.map((album: Album, index: number) => (
               <li key={index}>
                 {album.name}
                 <Image 
-                  src={album.imageUrl} 
-                  alt={album.name} 
-                  width={100} 
-                  height={100} 
-                  layout="intrinsic" // Optional, controls image layout
+                  src={album.imageUrl}
+                  alt={album.name}
+                  width={200}
+                  height={200}
+                  priority={false}
                 />
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </section>
       <section>
         {/* Poster edits elements */}
-        {/* TODO: Look to cache / buffer image to prevent loading times */}
+        <button onClick={generateCollage}>Generate Collage</button>
+        {collageUrl && (
+          <div>
+            <Image
+              src={collageUrl}
+              alt="Generated Collage"
+              width={1000}
+              height={1000}
+            />
+            <a href={collageUrl} download="collage.png">
+              <button>Download Collage</button>
+            </a>
+          </div>
+        )}
       </section>
     </div>
   );
