@@ -2,21 +2,50 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import Carousel from "components/Carousel";
+import CollageGrid from "components/CollageGrid";
 import { LP_GRID_ITEMS } from "lp-items"
 
-  interface Album {
-    name: string;
-    imageUrl: string;
-    totalTracks: number;
-    totalWeight: number;
-    score: number;
-  }
+interface Album {
+  name: string;
+  imageUrl: string;
+  imageWidth: number;
+  imageHeight: number;
+  totalTracks: number;
+  totalWeight: number;
+  score: number;
+}
+
+interface CollageItem {
+  name: string;
+  imageUrl: string;
+  imageWidth: number;
+  imageHeight: number;
+}
+
+const mapToCollageItem = (album: Album): CollageItem => { // TODO: update with other type: tracks, artists
+  return {
+    name: album.name,
+    imageUrl: album.imageUrl,
+    imageWidth: album.imageWidth,
+    imageHeight: album.imageHeight,
+  };
+};
 
 export default function Spotify() {
   const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
   const [topAlbums, setTopAlbums] = useState(Array<Album>());
   const [collageUrl, setCollageUrl] = useState<string | null>(null);
+  const [collageItems, setCollageItems] = useState<CollageItem[]>([]);
+  const [columns, setColumns] = useState<number>(5);
+  const [rows, setRows] = useState<number>(5);
+
+  const updateCollageItems = () => {
+    const mappedItems = topAlbums.map(mapToCollageItem);
+    setCollageItems(mappedItems);
+  };
 
   const generateCollage = async () => {
     const response = await fetch("/api/spotify/collage", {
@@ -52,6 +81,12 @@ export default function Spotify() {
     fetchTopAlbums();
   }, []);
 
+  useEffect(() => {
+    if (topAlbums.length > 0) {
+      updateCollageItems();
+    }
+  }, [topAlbums])
+
   return (
     <div className="bg-emerald-950 min-h-screen">
       <section>
@@ -64,7 +99,7 @@ export default function Spotify() {
             </div>
           </div>
         </div>
-        <div className="w-4/5 mx-auto">
+        <div className=" mx-auto">
           <Carousel images={[
             "/assets/spotify/carousel/1.png",
             "/assets/spotify/carousel/2.png",
@@ -89,23 +124,53 @@ export default function Spotify() {
           </ul>
         </div> */}
       </section>
-      <section>
-        {/* Poster edits elements */}
-        <button onClick={generateCollage}>Generate Collage</button>
-        {collageUrl && (
-          <div>
-            <Image
-              src={collageUrl}
-              alt="Generated Collage"
-              width={1000}
-              height={1000}
-            />
-            <a href={collageUrl} download="collage.png">
-              <button>Download Collage</button>
-            </a>
-          </div>
-        )}
-      </section>
+      <div className="w-[90%] h-[90%] mx-auto">
+        <DndProvider backend={HTML5Backend}>
+          <section>
+          <div className="mb-4">  {/* TODO: make component */}
+              <label htmlFor="columns" className="mr-2">Columns:</label>
+              <input
+                type="number"
+                id="columns"
+                value={columns}
+                onChange={(e) => setColumns(Number(e.target.value))}
+                min={1}
+                className="border p-2 rounded"
+              />
+              <label htmlFor="rows" className="ml-4 mr-2">Rows:</label>
+              <input
+                type="number"
+                id="rows"
+                value={rows}
+                onChange={(e) => setRows(Number(e.target.value))}
+                min={1}
+                className="border p-2 rounded"
+              />
+            </div>
+            <div>
+              <CollageGrid items={collageItems}
+                setItems={setCollageItems}
+                columns={columns}
+                rows={rows}
+              />
+            </div>
+            <button onClick={generateCollage}>Generate Collage</button>
+            {collageUrl && (
+              <div>
+                <Image
+                  src={collageUrl}
+                  alt="Generated Collage"
+                  width={1000}
+                  height={1000}
+                />
+                <a href={collageUrl} download="collage.png">
+                  <button>Download Collage</button>
+                </a>
+              </div>
+            )}
+          </section>
+        </DndProvider>
+      </div>
     </div>
   );
 }

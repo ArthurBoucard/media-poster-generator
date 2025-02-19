@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const limitedAlbums = albums.slice(0, 25);
 
     // Unique image URLs to avoid multiple fetches
-    const uniqueImages = [...new Set(limitedAlbums.map((album) => album.imageUrl))];
+    const uniqueImages = Array.from(new Set(limitedAlbums.map((album) => album.imageUrl)));
     const imageBufferMap = new Map<string, Buffer>();
 
     // Define collage size

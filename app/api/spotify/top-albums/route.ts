@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
   interface AlbumData {
     name: string;
     imageUrl: string;
+    imageWidth: number;
+    imageHeight: number;
     totalTracks: number;
     totalWeight: number;
   }
@@ -64,6 +66,8 @@ export async function GET(req: NextRequest) {
       acc[albumId] = {
         name: track.album.name,
         imageUrl: track.album?.images?.[0]?.url || '',
+        imageWidth: 640,
+        imageHeight: 640,
         totalTracks: 0,
         totalWeight: 0
       };
@@ -84,6 +88,8 @@ export async function GET(req: NextRequest) {
       albumId,
       name: album.name,
       imageUrl: album.imageUrl,
+      imageWidth: album.imageWidth,
+      imageHeight: album.imageHeight,
       totalTracks: album.totalTracks,
       totalWeight: album.totalWeight,
     };

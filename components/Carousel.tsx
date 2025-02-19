@@ -30,7 +30,7 @@ export default function Carousel({ images }: CarouselProps) {
         //   delay: 3000,
         //   disableOnInteraction: false,
         // }}
-        loop={true}
+        // loop={true}
         pagination={{
           dynamicBullets: true,
         }}
@@ -44,7 +44,7 @@ export default function Carousel({ images }: CarouselProps) {
               alt={`Slide ${index + 1}`}
               width={2000}
               height={1000}
-              className="h-128 w-256 mx-auto object-contain rounded-lg"
+              className="h-128 w-[54vw] mx-auto object-contain rounded-lg"
             />
           </SwiperSlide>
         ))}
