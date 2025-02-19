@@ -46,6 +46,9 @@ export default function Spotify() {
             </div>
           </div>
         </div>
+        <div>
+          {/* Carrousel of poster exemples */}
+        </div>
         <div className="mt-8">
           <h2 className="text-white text-lg">Top Albums</h2> {/* TODO: Temporary*/}
           <ul className="text-white">
@@ -63,6 +66,10 @@ export default function Spotify() {
             ))}
           </ul>
         </div>
+      </section>
+      <section>
+        {/* Poster edits elements */}
+        {/* TODO: Look to cache / buffer image to prevent loading times */}
       </section>
     </div>
   );
