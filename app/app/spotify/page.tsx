@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Carousel from "components/Carousel";
-import CollageGrid from "components/CollageGrid";
+import CollageGrid from "components/Collage/CollageGrid";
+import CollageSettings from "components/Collage/inputs";
 import { LP_GRID_ITEMS } from "lp-items"
 
 interface Album {
@@ -127,26 +128,7 @@ export default function Spotify() {
       <div className="w-[90%] h-[90%] mx-auto">
         <DndProvider backend={HTML5Backend}>
           <section>
-          <div className="mb-4">  {/* TODO: make component */}
-              <label htmlFor="columns" className="mr-2">Columns:</label>
-              <input
-                type="number"
-                id="columns"
-                value={columns}
-                onChange={(e) => setColumns(Number(e.target.value))}
-                min={1}
-                className="border p-2 rounded"
-              />
-              <label htmlFor="rows" className="ml-4 mr-2">Rows:</label>
-              <input
-                type="number"
-                id="rows"
-                value={rows}
-                onChange={(e) => setRows(Number(e.target.value))}
-                min={1}
-                className="border p-2 rounded"
-              />
-            </div>
+            <CollageSettings columns={columns} rows={rows} setColumns={setColumns} setRows={setRows} />
             <div>
               <CollageGrid items={collageItems}
                 setItems={setCollageItems}

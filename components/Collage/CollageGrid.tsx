@@ -50,10 +50,6 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
     newItems.splice(toIndex, 0, movedItem);
     setItems(newItems);
   };
-  // console.log("viewportWidth", window.innerWidth);
-  // console.log("viewportHeight", window.innerHeight);
-  // console.log("globalColumnsWidth", globalColumnsWidth);
-  // console.log("globalRowsHeight", globalRowsHeight);
 
   return (
     <div className="grid h-[90vh] overflow-auto gap-0"
