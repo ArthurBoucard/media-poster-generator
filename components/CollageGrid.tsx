@@ -23,7 +23,7 @@ function getMaxElementSize(
   ): { width: number; height: number }
 {
   const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportHeight = window.innerHeight - (window.innerHeight * 0.1);
 
   const scaleFactor = Math.min(viewportWidth / (columns * elementWidth), viewportHeight / (rows * elementHeight));
 
@@ -32,8 +32,6 @@ function getMaxElementSize(
       height: elementHeight * scaleFactor
   };
 }
-let globalColumnsWidth = 5;
-let globalRowsHeight = 5;
 
 const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, rows }) => {
   if (items.length === 0) {
@@ -41,20 +39,29 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
   }
   items = items.slice(0, columns * rows);
 
+  const elementSize =
+    items.length > 0 && items[0]
+      ? getMaxElementSize(columns, rows, items[0].imageWidth, items[0].imageHeight)
+      : { width: 50, height: 50 };
+
   const moveItem = (fromIndex: number, toIndex: number) => {
     const newItems = [...items];
     const [movedItem] = newItems.splice(fromIndex, 1);
     newItems.splice(toIndex, 0, movedItem);
     setItems(newItems);
   };
-  console.log("globalColumnsWidth", globalColumnsWidth);
-  console.log("globalRowsHeight", globalRowsHeight);
+  // console.log("viewportWidth", window.innerWidth);
+  // console.log("viewportHeight", window.innerHeight);
+  // console.log("globalColumnsWidth", globalColumnsWidth);
+  // console.log("globalRowsHeight", globalRowsHeight);
 
   return (
     <div className="grid h-[90vh] overflow-auto gap-0"
       style={{
-        gridTemplateColumns: `repeat(${columns}, ${globalColumnsWidth}px))`, //TODO: fix this
-        gridTemplateRows: `repeat(${rows}, ${globalRowsHeight}px))`,
+        gridTemplateColumns: `repeat(${columns}, ${elementSize.width}px)`,
+        gridTemplateRows: `repeat(${rows}, ${elementSize.height}px)`,
+        width: `${Math.min(elementSize.width * columns, window.innerWidth)}px`,
+        height: `${Math.min(elementSize.height * rows, window.innerHeight - (window.innerHeight * 0.1))}px`,
       }}
     >
       {items.map((item, index) => (
@@ -63,8 +70,7 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
           index={index}
           item={item}
           moveItem={moveItem}
-          columns={columns}
-          rows={rows}
+          elementSize={elementSize}
         />
       ))}
     </div>
@@ -75,16 +81,14 @@ interface CollageItemComponentProps {
   item: CollageItem;
   index: number;
   moveItem: (fromIndex: number, toIndex: number) => void;
-  columns: number;
-  rows: number;
+  elementSize: { width: number; height: number };
 }
 
 const CollageItemComponent: React.FC<CollageItemComponentProps> = ({
   item,
   index,
   moveItem,
-  columns,
-  rows,
+  elementSize,
 }) => {
   const [, drag] = useDrag(() => ({
     type: "item",
@@ -101,9 +105,6 @@ const CollageItemComponent: React.FC<CollageItemComponentProps> = ({
     },
   }));
 
-  globalColumnsWidth = getMaxElementSize(columns, rows, item.imageWidth, item.imageHeight).width;
-  globalRowsHeight = getMaxElementSize(columns, rows, item.imageWidth, item.imageHeight).height;
-
   return (
     <div
       ref={(node) => drag(drop(node))}
@@ -112,8 +113,8 @@ const CollageItemComponent: React.FC<CollageItemComponentProps> = ({
       <Image
         src={item.imageUrl}
         alt={item.name}
-        width={globalColumnsWidth}
-        height={globalRowsHeight}
+        width={elementSize.width}
+        height={elementSize.height}
         // objectFit="contain"
         // className="object-cover"
       />
