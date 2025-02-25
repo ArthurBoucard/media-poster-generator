@@ -9,24 +9,24 @@ interface CollageSettingsProps {
 
 const CollageSettings: React.FC<CollageSettingsProps> = ({ columns, rows, setColumns, setRows }) => {
   return (
-    <div className="mb-4">
-      <label htmlFor="columns" className="mr-2">Columns:</label>
+    <div className="mb-4 flex space-x-4">
+      <label htmlFor="columns" className="font-medium text-gray-900 dark:text-white">Columns:</label>
       <input
         type="number"
         id="columns"
         value={columns}
         onChange={(e) => setColumns(Number(e.target.value))}
         min={1}
-        className="border p-2 rounded"
+        className="bg-emerald-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5"
       />
-      <label htmlFor="rows" className="ml-4 mr-2">Rows:</label>
+      <label htmlFor="rows" className="font-medium text-gray-900 dark:text-white">Rows:</label>
       <input
         type="number"
         id="rows"
         value={rows}
         onChange={(e) => setRows(Number(e.target.value))}
         min={1}
-        className="border p-2 rounded"
+        className="bg-emerald-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5"
       />
     </div>
   );

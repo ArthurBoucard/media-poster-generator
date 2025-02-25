@@ -101,7 +101,9 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
           <CollageItemComponent key={index} index={index} item={item} moveItem={moveItem} elementSize={gridSize} />
         ))}
       </div>
-      <button onClick={generateCollage}>Download Collage</button>
+      <button className="bg-emerald-700 hover:bg-emerald-900 text-white font-bold py-2 px-4 rounded" onClick={generateCollage}>
+        Download Collage
+        </button>
     </div>
   );
 };

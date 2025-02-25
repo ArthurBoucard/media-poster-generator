@@ -82,7 +82,7 @@ export default function Spotify() {
             </div>
           </div>
         </div>
-        <div className=" mx-auto">
+        <div className="mx-auto p-5">
           <Carousel images={[
             "/assets/spotify/carousel/1.png",
             "/assets/spotify/carousel/2.png",
