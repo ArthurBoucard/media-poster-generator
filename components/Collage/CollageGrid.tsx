@@ -22,7 +22,7 @@ function getMaxElementSize(
     elementHeight: number
   ): { width: number; height: number }
 {
-  const viewportWidth = window.innerWidth;
+  const viewportWidth = window.innerWidth - (window.innerWidth * 0.14);
   const viewportHeight = window.innerHeight - (window.innerHeight * 0.1);
 
   const scaleFactor = Math.min(viewportWidth / (columns * elementWidth), viewportHeight / (rows * elementHeight));
@@ -52,7 +52,7 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
   };
 
   return (
-    <div className="grid h-[90vh] overflow-auto gap-0"
+    <div className="grid h-[90vh] gap-0"
       style={{
         gridTemplateColumns: `repeat(${columns}, ${elementSize.width}px)`,
         gridTemplateRows: `repeat(${rows}, ${elementSize.height}px)`,

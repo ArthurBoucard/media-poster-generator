@@ -127,7 +127,7 @@ export default function Spotify() {
       </section>
       <div className="w-[90%] h-[90%] mx-auto">
         <DndProvider backend={HTML5Backend}>
-          <section>
+          <section className=" bg-emerald-300 p-4 rounded-lg">
             <CollageSettings columns={columns} rows={rows} setColumns={setColumns} setRows={setRows} />
             <div>
               <CollageGrid items={collageItems}
