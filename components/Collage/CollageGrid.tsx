@@ -22,7 +22,7 @@ function getMaxElementSize(
     elementHeight: number
   ): { width: number; height: number }
 {
-  const viewportWidth = window.innerWidth - (window.innerWidth * 0.14);
+  const viewportWidth = window.innerWidth - (window.innerWidth * 0.14); // TODO: check why innerwdith is fullscreen width
   const viewportHeight = window.innerHeight - (window.innerHeight * 0.1);
 
   const scaleFactor = Math.min(viewportWidth / (columns * elementWidth), viewportHeight / (rows * elementHeight));
