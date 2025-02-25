@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image';
 import { useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -38,7 +37,6 @@ const mapToCollageItem = (album: Album): CollageItem => { // TODO: update with o
 export default function Spotify() {
   const item = LP_GRID_ITEMS.find(item => item.title === "Spotify") || { title: "Error", link: "error", icon: <div /> };
   const [topAlbums, setTopAlbums] = useState(Array<Album>());
-  const [collageUrl, setCollageUrl] = useState<string | null>(null);
   const [collageItems, setCollageItems] = useState<CollageItem[]>([]);
   const [columns, setColumns] = useState<number>(5);
   const [rows, setRows] = useState<number>(5);
@@ -46,22 +44,6 @@ export default function Spotify() {
   const updateCollageItems = () => {
     const mappedItems = topAlbums.map(mapToCollageItem);
     setCollageItems(mappedItems);
-  };
-
-  const generateCollage = async () => {
-    const response = await fetch("/api/spotify/collage", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(topAlbums), // TODO: add nb of column or row, and ratio size (1:1, 4:3, 16:9)
-    });
-
-    if (!response.ok) {
-      console.error("Failed to generate collage");
-      return;
-    }
-
-    const blob = await response.blob();
-    setCollageUrl(URL.createObjectURL(blob));
   };
 
   useEffect(() => {
@@ -136,20 +118,6 @@ export default function Spotify() {
                 rows={rows}
               />
             </div>
-            <button onClick={generateCollage}>Generate Collage</button>
-            {collageUrl && (
-              <div>
-                <Image
-                  src={collageUrl}
-                  alt="Generated Collage"
-                  width={1000}
-                  height={1000}
-                />
-                <a href={collageUrl} download="collage.png">
-                  <button>Download Collage</button>
-                </a>
-              </div>
-            )}
           </section>
         </DndProvider>
       </div>

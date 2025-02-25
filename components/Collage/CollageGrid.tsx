@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 
 interface CollageItem {
@@ -15,60 +18,91 @@ interface CollageGridProps {
   rows: number;
 }
 
-function getMaxElementSize(
-    columns: number,
-    rows: number,
-    elementWidth: number,
-    elementHeight: number
-  ): { width: number; height: number }
-{
-  const viewportWidth = window.innerWidth - (window.innerWidth * 0.14); // TODO: check why innerwdith is fullscreen width
-  const viewportHeight = window.innerHeight - (window.innerHeight * 0.1);
-
-  const scaleFactor = Math.min(viewportWidth / (columns * elementWidth), viewportHeight / (rows * elementHeight));
-
-  return {
-      width: elementWidth * scaleFactor,
-      height: elementHeight * scaleFactor
-  };
-}
-
 const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, rows }) => {
-  if (items.length === 0) {
-    return <p>No images available</p>;
-  }
-  items = items.slice(0, columns * rows);
+  const [collageUrl, setCollageUrl] = useState<string | null>(null);
+  const [gridSize, setGridSize] = useState({ width: 0, height: 0 });
 
-  const elementSize =
-    items.length > 0 && items[0]
-      ? getMaxElementSize(columns, rows, items[0].imageWidth, items[0].imageHeight)
-      : { width: 50, height: 50 };
+  useEffect(() => {
+    const updateGridSize = () => {
+      const viewportWidth = document.documentElement.clientWidth * 0.86;
+      const viewportHeight = document.documentElement.clientHeight * 0.9;
 
-  const moveItem = (fromIndex: number, toIndex: number) => {
-    const newItems = [...items];
-    const [movedItem] = newItems.splice(fromIndex, 1);
-    newItems.splice(toIndex, 0, movedItem);
-    setItems(newItems);
+      if (items[0]) {
+        const { imageWidth, imageHeight } = items[0];
+        const scaleFactor = Math.min(viewportWidth / (columns * imageWidth), viewportHeight / (rows * imageHeight));
+
+        setGridSize({
+          width: imageWidth * scaleFactor,
+          height: imageHeight * scaleFactor,
+        });
+      }
+    };
+
+    updateGridSize();
+    window.addEventListener("resize", updateGridSize);
+    return () => window.removeEventListener("resize", updateGridSize);
+  }, [items, columns, rows]);
+
+  const moveItem = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (fromIndex === toIndex) return;
+      setItems((prevItems) => {
+        const newItems = [...prevItems];
+        const [movedItem] = newItems.splice(fromIndex, 1);
+        newItems.splice(toIndex, 0, movedItem);
+        return newItems;
+      });
+    },
+    [setItems]
+  );
+
+  const generateCollage = async () => {
+    const response = await fetch("/api/spotify/collage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(items), // TODO: add nb of column or row, and ratio size (1:1, 4:3, 16:9)
+    });
+
+    if (!response.ok) {
+      console.error("Failed to generate collage");
+      return;
+    }
+
+    const blob = await response.blob();
+    setCollageUrl(URL.createObjectURL(blob));
   };
+
+  if (!items.length) return <p>No images available</p>;
 
   return (
-    <div className="grid h-[90vh] gap-0"
-      style={{
-        gridTemplateColumns: `repeat(${columns}, ${elementSize.width}px)`,
-        gridTemplateRows: `repeat(${rows}, ${elementSize.height}px)`,
-        width: `${Math.min(elementSize.width * columns, window.innerWidth)}px`,
-        height: `${Math.min(elementSize.height * rows, window.innerHeight - (window.innerHeight * 0.1))}px`,
-      }}
-    >
-      {items.map((item, index) => (
-        <CollageItemComponent
-          key={item.imageUrl}
-          index={index}
-          item={item}
-          moveItem={moveItem}
-          elementSize={elementSize}
-        />
-      ))}
+    <div>
+      <div
+        className="grid h-[90vh]"
+        style={{
+          gridTemplateColumns: `repeat(${columns}, ${gridSize.width}px)`,
+          gridTemplateRows: `repeat(${rows}, ${gridSize.height}px)`,
+          maxWidth: "100%",
+          maxHeight: "90vh",
+        }}
+      >
+        {items.slice(0, columns * rows).map((item, index) => (
+          <CollageItemComponent key={item.imageUrl} index={index} item={item} moveItem={moveItem} elementSize={gridSize} />
+        ))}
+      </div>
+      <button onClick={generateCollage}>Generate Collage</button>
+      {collageUrl && (
+        <div>
+          <Image
+            src={collageUrl}
+            alt="Generated Collage"
+            width={1000}
+            height={1000}
+          />
+          <a href={collageUrl} download="collage.png">
+            <button>Download Collage</button>
+          </a>
+        </div>
+      )}
     </div>
   );
 };
@@ -80,39 +114,43 @@ interface CollageItemComponentProps {
   elementSize: { width: number; height: number };
 }
 
-const CollageItemComponent: React.FC<CollageItemComponentProps> = ({
-  item,
-  index,
-  moveItem,
-  elementSize,
-}) => {
-  const [, drag] = useDrag(() => ({
+const CollageItemComponent: React.FC<CollageItemComponentProps> = ({ item, index, moveItem, elementSize }) => {
+  const lastMovedIndex = useRef<number | null>(null);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: "item",
     item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
   }));
 
   const [, drop] = useDrop(() => ({
     accept: "item",
     hover: (draggedItem: { index: number }) => {
-      if (draggedItem.index !== index) {
+      if (draggedItem.index !== index && lastMovedIndex.current !== index) {
         moveItem(draggedItem.index, index);
+        lastMovedIndex.current = index;
         draggedItem.index = index;
       }
+    },
+    drop: () => {
+      lastMovedIndex.current = null;
     },
   }));
 
   return (
     <div
       ref={(node) => drag(drop(node))}
-      className="cursor-grab"
+      className={`cursor-grab transition-opacity ${isDragging ? "opacity-50" : "opacity-100"}`}
+      style={{ width: elementSize.width, height: elementSize.height }}
     >
       <Image
         src={item.imageUrl}
         alt={item.name}
         width={elementSize.width}
         height={elementSize.height}
-        // objectFit="contain"
-        // className="object-cover"
+        className="object-cover w-full h-full"
       />
     </div>
   );
