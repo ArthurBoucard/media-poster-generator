@@ -40,6 +40,7 @@ export default function Spotify() {
   const [collageItems, setCollageItems] = useState<CollageItem[]>([]);
   const [columns, setColumns] = useState<number>(5);
   const [rows, setRows] = useState<number>(5);
+  const [ratio, setRatio] = useState<string>("1:1");
 
   const updateCollageItems = () => {
     const mappedItems = topAlbums.map(mapToCollageItem);
@@ -89,33 +90,17 @@ export default function Spotify() {
             "/assets/spotify/carousel/3.png",
           ]} />
         </div>
-        {/* <div className="mt-8">
-          <h2 className="text-white text-lg">Top Albums</h2> {}
-          <ul className="text-white">
-            {topAlbums.map((album: Album, index: number) => (
-              <li key={index}>
-                {album.name}
-                <Image 
-                  src={album.imageUrl}
-                  alt={album.name}
-                  width={200}
-                  height={200}
-                  priority={false}
-                />
-              </li>
-            ))}
-          </ul>
-        </div> */}
       </section>
       <div className="w-[90%] h-[90%] mx-auto">
         <DndProvider backend={HTML5Backend}>
           <section className=" bg-emerald-300 p-4 rounded-lg">
-            <CollageSettings columns={columns} rows={rows} setColumns={setColumns} setRows={setRows} />
+            <CollageSettings columns={columns} rows={rows} ratio={ratio} setColumns={setColumns} setRows={setRows} setRatio={setRatio} />
             <div>
               <CollageGrid items={collageItems}
                 setItems={setCollageItems}
                 columns={columns}
                 rows={rows}
+                ratio={ratio}
               />
             </div>
           </section>

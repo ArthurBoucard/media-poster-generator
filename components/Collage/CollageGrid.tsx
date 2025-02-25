@@ -16,9 +16,10 @@ interface CollageGridProps {
   setItems: (items: CollageItem[] | ((prevItems: CollageItem[]) => CollageItem[])) => void;
   columns: number;
   rows: number;
+  ratio: string;
 }
 
-const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, rows }) => {
+const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, rows, ratio }) => { // TODO: create a new background representing the ratio size around the collage + be able to move the whole collage by locking it
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
