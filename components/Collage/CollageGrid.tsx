@@ -19,7 +19,6 @@ interface CollageGridProps {
 }
 
 const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, rows }) => {
-  const [collageUrl, setCollageUrl] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -60,7 +59,11 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
     const response = await fetch("/api/spotify/collage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(items), // TODO: add nb of column or row, and ratio size (1:1, 4:3, 16:9)
+      body: JSON.stringify({
+        items,
+        columns,
+        rows,
+      }), // TODO: add ratio size (1:1, 4:3, 16:9)
     });
 
     if (!response.ok) {
@@ -69,7 +72,14 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
     }
 
     const blob = await response.blob();
-    setCollageUrl(URL.createObjectURL(blob));
+    const downloadUrl = URL.createObjectURL(blob);
+  
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = "collage.png";
+    a.click();
+  
+    URL.revokeObjectURL(downloadUrl);
   };
 
   if (!items.length) return <p>No images available</p>;
@@ -89,20 +99,7 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
           <CollageItemComponent key={item.imageUrl} index={index} item={item} moveItem={moveItem} elementSize={gridSize} />
         ))}
       </div>
-      <button onClick={generateCollage}>Generate Collage</button>
-      {collageUrl && (
-        <div>
-          <Image
-            src={collageUrl}
-            alt="Generated Collage"
-            width={1000}
-            height={1000}
-          />
-          <a href={collageUrl} download="collage.png">
-            <button>Download Collage</button>
-          </a>
-        </div>
-      )}
+      <button onClick={generateCollage}>Download Collage</button>
     </div>
   );
 };
