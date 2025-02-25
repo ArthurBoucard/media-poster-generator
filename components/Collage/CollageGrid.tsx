@@ -13,7 +13,7 @@ interface CollageItem {
 
 interface CollageGridProps {
   items: CollageItem[];
-  setItems: (items: CollageItem[]) => void;
+  setItems: (items: CollageItem[] | ((prevItems: CollageItem[]) => CollageItem[])) => void;
   columns: number;
   rows: number;
 }
@@ -45,10 +45,12 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
   const moveItem = useCallback(
     (fromIndex: number, toIndex: number) => {
       if (fromIndex === toIndex) return;
-      setItems((prevItems) => {
+      setItems((prevItems: CollageItem[]) => {
         const newItems = [...prevItems];
         const [movedItem] = newItems.splice(fromIndex, 1);
-        newItems.splice(toIndex, 0, movedItem);
+        if (movedItem) {
+          newItems.splice(toIndex, 0, movedItem);
+        }
         return newItems;
       });
     },
@@ -138,7 +140,9 @@ const CollageItemComponent: React.FC<CollageItemComponentProps> = ({ item, index
 
   return (
     <div
-      ref={(node) => drag(drop(node))}
+      ref={(node) => {
+        if (node) drag(drop(node));
+      }}
       className={`cursor-grab transition-opacity ${isDragging ? "opacity-50" : "opacity-100"}`}
       style={{ width: elementSize.width, height: elementSize.height }}
     >
