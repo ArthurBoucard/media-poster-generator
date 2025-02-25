@@ -22,7 +22,7 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    const updateGridSize = () => {
+    const updateGridSize = () => { // TODO: add ratio size (1:1, 4:3, 16:9)
       const viewportWidth = document.documentElement.clientWidth * 0.86;
       const viewportHeight = document.documentElement.clientHeight * 0.9;
 
@@ -97,8 +97,8 @@ const CollageGrid: React.FC<CollageGridProps> = ({ items, setItems, columns, row
           maxHeight: "90vh",
         }}
       >
-        {items.slice(0, columns * rows).map((item, index) => (
-          <CollageItemComponent key={item.imageUrl} index={index} item={item} moveItem={moveItem} elementSize={gridSize} />
+        { items.slice(0, columns * rows).map((item, index) => (
+          <CollageItemComponent key={index} index={index} item={item} moveItem={moveItem} elementSize={gridSize} />
         ))}
       </div>
       <button onClick={generateCollage}>Download Collage</button>
